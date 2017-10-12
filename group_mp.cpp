@@ -28,8 +28,8 @@ private:
 	int col;
 
 	bool visited;
-	int cumulativeCost;
-	int heuristic;
+	int cumulativeCost; // g - score
+	int heuristic;		// h - score
 	Square *parent;
 public:
 	Square() {
@@ -39,15 +39,21 @@ public:
 		content = 0;
 	}
 
+	// set cumulativeCost of each square to infinity
 	Square(int row, int col,char item) {
 		row = row;
 		col = col;
 		visited = false;
 		this->content = item;		
+		// this->cumulativeCost = numeric_limits<int>::infinity();
 	}
 
 	bool isPassable() { return (content == WALL) ? false : true; }
-	bool isVisited() { return visited; }
+
+	bool isVisited() { return visited; } // change to: ?
+	// bool isVisisted(Vector<Square> closedList) {
+		// return find(closedList.begin(), closedList.end(), this)
+	// }
 
 	char getItem() { return content; }
 	int getRow() { return row; }
@@ -116,8 +122,8 @@ public:
 		delete[] maze;
 	}
 
-	Square getSquare(int x ,int y) { return maze[x][y]; }
-	void setVisited(int x, int y) { maze[x][y].setVisited(); }
+	Square getSquare(int x ,int y) { removeturn maze[x][y]; }
+	void setVisited(int x, int y) { maze[x][y].setVisited(); } // remove?
 	// void setPath(int,int);
 	int getLength() { return length; }
 	int getWidth() { return width; }
@@ -134,6 +140,7 @@ public:
 };
 
 
+// Create Constructor for Pacman
 class PacMan {
 private:
 	Maze m;
@@ -143,13 +150,20 @@ private:
 	Square current;
 	Square goal;
 public:
-	bool addSquare(int,int);
-	void scoutDirections();
-	Square getLowestCost();
-	void switchClosed();
+	// Pacman(Maze m) {
+	//		set start square to openList
+	//		initialize goal square?
+	// }
+	bool addSquare(int,int);	// change to checkNeighbor
+	void scoutDirections();		// change to evaluateCurrentSquare
+	Square getLowestCost();		
+	void switchClosed();		// change to moveToNextSquare
 	bool fin();
 };
 
+// 3.1
+// change to checkNeighbor
+// add condition if square in closed set and if not in open set
 bool PacMan::addSquare(int x, int y) {
 	if(x > m.getLength() || y m.getWidth() || x < 0 || y < 0) {
 		return false;
@@ -158,12 +172,33 @@ bool PacMan::addSquare(int x, int y) {
 	} else {
 		openList.add(m.getSquare(x,y));
 	}
+
+	// to be added/changed in condition ^
+	// } else if(m.getSquare(x,y).isVisited()) {
+		// return false;
+	// } else if(!inOpenList(m.getSquare(x,y))) {
+		// openList.add(m.getSquare(x,7));
+	// }
+
+
+
+	// special check for g-score to determine if better path
+	// tentative_cumulative_cost = current.getCumulative() + 1
+	// if (tentative_cumulative_cost < m.getSqure(x, y).getCumulative) 
+	//		This path is the best until now. Record it	
+	//		m.getSquare(x, y).setParent(current)
+	//		m.getSquare.setCumulativeCost()
+
+
 }
 
+// 1.1
+// put remove square in openlist
 Square PacMan::getLowestCostSquare() {
 	int min = numeric_limits<int>::infinity();
 	Square current;
 
+	// supposedly it->getCumulative() + it->getHeuristic()
 	for(vector<Square>::iterator it = openList().begin; it != openList.end(); it++) {
 		if(it->getCumulative() < min) {
 			min = it->getCumulative();
@@ -174,11 +209,15 @@ Square PacMan::getLowestCostSquare() {
 	return current;
 }
 
+// 1
+// change to moveToNextSquare
 bool PacMan::switchClosed() {
 	closedList.add(getLowestCostSquare());
 	current = *(closedList.begin());	
 }
 
+// 3
+// change to evaluateCurrentSquare
 void PacMan::scoutDirections() {
 	addSquare(current.getRow()-1,current.getCol());
 	addSquare(current.getRow(),current.getCol()-1);
@@ -186,6 +225,7 @@ void PacMan::scoutDirections() {
 	addSquare(current.getRow(),current.getCol()+1);
 }
 
+// 2
 bool PacMan::fin() {
 	if(current.getRow() == goal.getRow() && current.getCol() == goal.getCol()){
 		return true;
@@ -194,8 +234,32 @@ bool PacMan::fin() {
 }
 
 int main() {
+	// cout<<aStar()<<endl;	
+	
 	return 0;
 }
+
+// String aStar() {
+	// while(openSet.isNotEmpty) {
+		// moveToNextSquare(); // 
+		// if(fin()) {
+			// return reconstructPath()
+		// }
+		// 
+		// evaluateCurrentSquare();
+	//}
+	// return "Failure, no possible path";
+
+// }
+
+// String reconstructPath() {
+	// Square pathSquare = current;
+	// while(m.getSquare(pathSquare.getRow(), pathSquare.getCol).getContent != START) {
+		// Square parent = pathSquare.getParent();
+		// parent.setContent('.');
+	// }	
+	// return m;
+// }
 
 /*
 	pacman starts at Pos current
