@@ -18,9 +18,9 @@ int main() {
 	// cout<<aStar()<<endl;
 	char fileName[100] = "tinyMaze.lay.txt";
 	int option;
-	cin >> option;
+	cin >> option;	
 	PacMan p(readMazeText(fileName),option);
-	//cout << p.mazeToString() << endl;
+	cout << p.mazeToString() << endl;
 	p.solve();
 	cout << "\n\n" << endl;
 	cout << p.mazeToString() << endl;
