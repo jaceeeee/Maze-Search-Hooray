@@ -45,6 +45,12 @@ public:
 
 bool PacMan::solve() {
 	//current
+
+
+	for (int i = 0; i < m->getLength(); i++) 
+		for(int j = 0; j < m->getWidth(); j++) 
+			m->setHeuristic()
+	
 	bool found = false;
 	while(!this->openList.empty()) {
 		switchCurrentToClosed();
