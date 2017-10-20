@@ -177,7 +177,7 @@ bool PacMan::addSquare(int x, int y) {
 	// } else if(m.getSquare(x,y).isVisited()) {
 		// return false;
 	// } else if(!inOpenList(m.getSquare(x,y))) {
-		// openList.add(m.getSquare(x,7));
+		// openList.add(m.getSquare(x,y));
 	// }
 
 
