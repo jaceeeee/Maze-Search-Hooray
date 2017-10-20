@@ -7,8 +7,9 @@ private:
 	int length, width;
 	Square *start;
 	Square *end;
-	Square **maze;
+	
 public:
+	Square **maze;
 	Maze() {
 		this->length = 0;
 		this->width = 0;
@@ -47,7 +48,7 @@ public:
 				this->maze[i][j]=Square(i,j,mazeInFile[k]);
 				if(this->maze[i][j].getItem() == START) { //Jace changes
 					this->start = &this->maze[i][j];
-					cout << this->start->getItem() << endl;
+					// cout << this->start->getItem() << endl;
 				}
 				else if(this->maze[i][j].getItem() == '.') { //Jace changes
 					this->end = &this->maze[i][j];

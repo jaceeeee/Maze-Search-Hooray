@@ -10,16 +10,13 @@ private:
 	Square* current;
 	Square goal;
 public:
-	// Pacman(Maze m) {
-	//		set start square to openList
-	//		initialize goal square?
-	// }
-	PacMan(Maze* maze, int type) { //Jace changes
+	PacMan(Maze* maze, int type) { 
 		m = maze;
 		heuristicType = type;
 		current = m->getStartingSquare();
 		openList.push_back(current);
 		current = openList.back();
+		goal = m->getEndSquare();
 	}
 
 	~PacMan(){
@@ -44,6 +41,16 @@ public:
 };
 
 bool PacMan::solve() {
+	// //initialize Heuristics
+	
+	// for(int i = 0; i < m->getLength(); i++) {
+	// 	for(int j = 0; j < m->getWidth(); j++) {
+	// 		m->setHeuristic(heuristicType, goal, i, j);
+	// 	}
+	// }
+
+	// return true;
+
 	//current
 	bool found = false;
 	while(!this->openList.empty()) {
@@ -56,6 +63,7 @@ bool PacMan::solve() {
 			break;
 		}
 	}
+
 // String aStar() {
 	// while(openSet.isNotEmpty) {
 		// moveToNextSquare(); //
@@ -66,9 +74,39 @@ bool PacMan::solve() {
 		// evaluateCurrentSquare();
 	//}
 	// return "Failure, no possible path";
-	return found;
+// 	return found;
 // }
 }
+
+void PacMan::switchCurrentToClosed() {
+	closedList.push_back(getLowestCostSquare());
+	//cout << "did you come here friend ?1" << endl;
+
+	//vector<Square*>::iterator it = openList.back();
+	current = openList.back();
+	//cout << "did you come here friend ?2" << endl;
+
+	cout << current->getItem() << endl;
+	//cout << "asa na mn ka ???" << endl;
+	m->setVisited(current->getRow(), current->getCol());
+	//cout << "did you come here friend ?3" << endl;
+
+}
+
+Square* PacMan::getLowestCostSquare() {
+	int min = numeric_limits<int>::infinity();
+
+	// supposedly it->getCumulative() + it->getHeuristic()
+	for(vector<Square*>::iterator it = openList.begin(); it != openList.end(); it++) {
+		if((*it)->getCumulative() < min) {
+			min = (*it)->getCumulative();
+			this->current = *it;
+		}
+	}
+	//cout << " ni ari ka sa lowestCostSquare" << endl;
+	return current;
+}
+
 
 string PacMan::reconstructPath() {
 	string path = "";
@@ -139,37 +177,6 @@ bool PacMan::inOpenList(Square* s) {
 		if(openList[i]->getRow() == s->getRow() && openList[i]->getCol() == s->getCol())
 			return true;
 	return false;
-}
-
-// 1.1
-// put remove square in openlist
-Square* PacMan::getLowestCostSquare() {
-	int min = numeric_limits<int>::infinity();
-
-	// supposedly it->getCumulative() + it->getHeuristic()
-	for(vector<Square*>::iterator it = openList.begin(); it != openList.end(); it++) {
-		if((*it)->getCumulative() < min) {
-			min = (*it)->getCumulative();
-			this->current = *it;
-		}
-	}
-	//cout << " ni ari ka sa lowestCostSquare" << endl;
-	return current;
-}
-
-void PacMan::switchCurrentToClosed() {
-	closedList.push_back(getLowestCostSquare());
-	//cout << "did you come here friend ?1" << endl;
-
-	//vector<Square*>::iterator it = openList.back();
-	current = openList.back();
-	//cout << "did you come here friend ?2" << endl;
-
-	cout << current->getItem() << endl;
-	//cout << "asa na mn ka ???" << endl;
-	m->setVisited(current->getRow(), current->getCol());
-	//cout << "did you come here friend ?3" << endl;
-
 }
 
 // 3
