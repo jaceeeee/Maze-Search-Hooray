@@ -15,16 +15,15 @@ using namespace std;
 Maze* readMazeText(char[]);
 
 int main() {
+	// cout<<aStar()<<endl;
 	char fileName[100] = "tinyMaze.lay.txt";
 	int option;
-	cin >> option;
-
+	cin >> option;	
 	PacMan p(readMazeText(fileName),option);
 	cout << p.mazeToString() << endl;
-	
 	p.solve();
-	// cout << "\n\n" << endl;
-	// cout << p.mazeToString() << endl;
+	cout << "\n\n" << endl;
+	cout << p.mazeToString() << endl;
 	return 0;
 }
 
@@ -81,10 +80,10 @@ Maze* readMazeText(char fileName[]) { // Jace changes
 		fileContents += buffer.substr(0,lineWidth);
 		lineCount++;
 	}
-	// cout << "yo naa ko diri" << endl;
-	// cout<<fileContents<< endl;
+	cout << "yo naa ko diri" << endl;
+	//cout<<fileContents<< endl;
 	Maze* ret = new Maze(lineCount,lineWidth,fileContents);
-	// cout << ret->toString() << endl;
-	// cout << "hi" << endl;
+	cout << ret->toString() << endl;
+	cout << "hi" << endl;
 	return ret;
 }

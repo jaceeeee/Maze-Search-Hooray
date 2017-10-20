@@ -7,9 +7,8 @@ private:
 	int length, width;
 	Square *start;
 	Square *end;
-	
-public:
 	Square **maze;
+public:
 	Maze() {
 		this->length = 0;
 		this->width = 0;
@@ -48,7 +47,7 @@ public:
 				this->maze[i][j]=Square(i,j,mazeInFile[k]);
 				if(this->maze[i][j].getItem() == START) { //Jace changes
 					this->start = &this->maze[i][j];
-					// cout << this->start->getItem() << endl;
+					cout << this->start->getItem() << endl;
 				}
 				else if(this->maze[i][j].getItem() == '.') { //Jace changes
 					this->end = &this->maze[i][j];
@@ -72,9 +71,9 @@ public:
 	Square* getStartingSquare() { return this->start; }
 	Square getEndSquare() { return *this->end; }
 	void setVisited(int x, int y) {
-		 cout << "weirddd" << endl;
+		 // cout << "weirddd" << endl;
 		 maze[x][y].setVisited();
-		 cout << " hoy asa ka?" << endl;
+		 // cout << " hoy asa ka?" << endl;
 	}
 	// remove?
 	void setParent(int x, int y, Square* parent) { maze[x][y].setParent(parent); }
@@ -122,3 +121,8 @@ Maze& Maze::operator=(const Maze& maze) {
 	cout << " hi ni ari mn ka no ?" << endl;
 	return *this;
 }
+
+
+// push to closed list
+// copy reference to current
+// 
