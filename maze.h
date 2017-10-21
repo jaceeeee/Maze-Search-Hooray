@@ -28,7 +28,7 @@ public:
 				if(this->maze[i][j].getItem() == START) { //Jace changes
 					this->start = &this->maze[i][j];
 				}
-				else if(this->maze[i][j].getItem() == '.') { //Jace changes
+				else if(this->maze[i][j].getItem() == END) { //Jace changes
 					this->end = &this->maze[i][j];
 					endarray.push_back(&this->maze[i][j]);
 				}
@@ -49,9 +49,8 @@ public:
 				this->maze[i][j]=Square(i,j,mazeInFile[k]);
 				if(this->maze[i][j].getItem() == START) { //Jace changes
 					this->start = &this->maze[i][j];
-					cout << this->start->getItem() << endl;
 				}
-				else if(this->maze[i][j].getItem() == '.') { //Jace changes
+				else if(this->maze[i][j].getItem() == END) { //Jace changes
 					this->end = &this->maze[i][j];
 				}
 			}
@@ -62,6 +61,8 @@ public:
 		for (int i = 0; i < length; i++)
 			delete[] maze[i];
 
+		maze = NULL;
+		start = end = NULL;
 		delete[] maze;
 		delete start;
 		delete end;
@@ -72,12 +73,7 @@ public:
 	Square* getSquare(int x ,int y) { return &maze[x][y]; }
 	Square* getStartingSquare() { return this->start; }
 	Square getEndSquare() { return *this->end; }
-	void setVisited(int x, int y) {
-		 cout << "weirddd" << endl;
-		 maze[x][y].setVisited();
-		 cout << " hoy asa ka?" << endl;
-	}
-	// remove?
+	void setVisited(int x, int y) {	maze[x][y].setVisited(); }
 	void setParent(int x, int y, Square* parent) { maze[x][y].setParent(parent); }
 	void setCumulativeCost(int x, int y, int cost) { maze[x][y].setCumulative(cost); }
 	void setHeuristic(int type, Square goal, int x, int y) { maze[x][y].setHeuristic(type,goal.getRow(),goal.getCol()); }
@@ -93,13 +89,14 @@ public:
 	int getSizeEndArray() { }
 	string toString() {
 		string stringMaze = "";
+
 		for(int i = 0; i < length; i++){
 			for(int j = 0; j < width; j++){
 				stringMaze += maze[i][j].getItem();
 			}
 			stringMaze += '\n';
 		}
-		//cout << stringMaze << endl;
+
 		return stringMaze;
 	}
 
@@ -116,16 +113,10 @@ Maze& Maze::operator=(const Maze& maze) {
 	for(int i = 0, k = 0; i < length; i++) {
 		for(int j = 0; j < width; j++, k++) {
 			this->maze[i][j]=maze.maze[i][j];
-			// cout << "Happening...? " << maze.maze[i][j].getItem() << endl;
-			if(this->maze[i][j].getItem() == START) { //Jace changes
-				this->start = &this->maze[i][j];
-				// cout << "Here" << endl;
-			}
-			else if(this->maze[i][j].getItem() == '.') { //Jace changes
-				this->end = &this->maze[i][j];
-			}
+			if(this->maze[i][j].getItem() == START) { this->start = &this->maze[i][j]; }
+			else if(this->maze[i][j].getItem() == '.') { this->end = &this->maze[i][j]; }
 		}
 	}
-	cout << " hi ni ari mn ka no ?" << endl;
+
 	return *this;
 }
