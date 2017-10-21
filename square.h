@@ -53,6 +53,11 @@ public:
 		// this->cumulativeCost = numeric_limits<int>::infinity();
 	}
 
+	~Square() {
+		parent = NULL;
+		delete this->parent;
+	}
+
 	bool isPassable() { return (content == WALL) ? false : true; }
 
 	void setParent(Square *sq) { parent = sq; }
@@ -113,7 +118,7 @@ void Square::setHeuristic(int type, int destX, int destY) {
 	}
 	else {
 		cout << "Heuristic type not valid. Resend arguments." << endl;
-	}
+		}
 }
 
 // produce heuristics

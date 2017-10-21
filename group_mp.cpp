@@ -12,18 +12,20 @@ using namespace std;
 // TODO; FINISH
 
 // Create Constructor for Pacman
-Maze* readMazeText(char[]);
+Maze readMazeText(char[]);
 
 int main() {
 	// cout<<aStar()<<endl;
-	char fileName[100] = "tinyMaze.lay.txt";
+	char fileName[100] = "tinyMaze.lay.txt";		
 	int option;
 	cin >> option;	
 	PacMan p(readMazeText(fileName),option);
 	cout << p.mazeToString() << endl;
-	p.solve();
+	string sol = (p.solve()) ? "Yes" : "No";
+	cout << "Solved? " << sol << endl;
 	cout << "\n\n" << endl;
 	cout << p.mazeToString() << endl;
+
 	return 0;
 }
 
@@ -60,13 +62,13 @@ int main() {
 
 */
 
-Maze* readMazeText(char fileName[]) { // Jace changes
+Maze readMazeText(char fileName[]) { // Jace changes
 	ifstream file(fileName);
 
 	if(!file.is_open()) {
 		cout << "File not found." << endl;
 		Maze *m = new Maze();
-		return m;
+		return *m;
 	}
 
 	string fileContents="", buffer;
@@ -80,10 +82,10 @@ Maze* readMazeText(char fileName[]) { // Jace changes
 		fileContents += buffer.substr(0,lineWidth);
 		lineCount++;
 	}
-	cout << "yo naa ko diri" << endl;
+
 	//cout<<fileContents<< endl;
 	Maze* ret = new Maze(lineCount,lineWidth,fileContents);
-	cout << ret->toString() << endl;
-	cout << "hi" << endl;
-	return ret;
+
+
+	return *ret;
 }

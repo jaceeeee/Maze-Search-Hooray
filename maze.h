@@ -49,20 +49,27 @@ public:
 					this->start = &this->maze[i][j];
 					cout << this->start->getItem() << endl;
 				}
-				else if(this->maze[i][j].getItem() == '.') { //Jace changes
+				else if(this->maze[i][j].getItem() == END) { //Jace changes
 					this->end = &this->maze[i][j];
+					cout << "Hello" << endl;
 				}
 			}
 		}
+
+		cout << "finished maze constructor exec..." << endl;
 	}
 
 	~Maze() {
-		for (int i = 0; i < length; i++)
+		for (int i = 0; i < length; i++){			
+			maze[i] = NULL;
 			delete[] maze[i];
+		}
 
+		maze = NULL;
 		delete[] maze;
+		start = end = NULL;
 		delete start;
-		delete end;
+		delete end;		
 	}
 
 	//Square getSquare(int x ,int y) { removeturn maze[x][y]; }
@@ -99,6 +106,7 @@ public:
 };
 
 Maze& Maze::operator=(const Maze& maze) {
+	cout << "First loop operator= in maze assignment exec" << endl;
 	this->length = maze.length, this->width = maze.width;
 	this->maze = maze.maze;
 
