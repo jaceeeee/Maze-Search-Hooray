@@ -1,32 +1,50 @@
-#include "maze.h"
+	#include "maze.h"
 
 class PacMan {
 private:
 	Maze *m;
-	int heuristicType;	
+	Square* current;	
+
 	vector<Square*> closedList;
 	vector<Square*> openList;
-	Square* current;	
+
+	vector<Square*> goalArray;
+	Square* currentGoal;
+
+	int heuristicType;	
+	int cost;
+	int frontierSize;
 public:
 	
 	// set start square to openList
 	// initialize goal square? NO NEED.
 	PacMan(Maze *maze, int type) { //Jace changes
 		m = maze;
-		heuristicType = type;
-		current = m->getStartingSquare();
-		openList.push_back(current);
-		current = openList.back();
+
+		current = m->getStartingSquare();		
 		current->setCumulative(0);
 		current->setHeuristic(type,m->getEndSquare().getCol(),m->getEndSquare().getRow());
 		current->setFScore();
+		
+		openList.push_back(current);
+		for(int i = 0; i < maze->getLength(); i++) {
+			for(int j = 0; j < maze->getWidth(); j++) {
+				if(maze->getSquare(i,j)->getItem() == END) {
+					goalArray.push_back(m->getSquare(i,j));					
+				}
+			}
+		}
+
+		heuristicType = type;
+		frontierSize = cost = 0;
 	}
 
 	~PacMan(){
 		m = NULL;
-		current = NULL;
+		currentGoal = current = NULL;
 		delete m;
-		delete current;		
+		delete current;
+		delete currentGoal;
 	}
 
 	bool addSquare(int,int);				// Refactor Comments: change to checkNeighbor
@@ -40,7 +58,8 @@ public:
 	string reconstructPath();
 	string pathToString(Square*);
 	string mazeToString() { return m->toString(); }
-
+	int selectClosestGoal();
+	void printStatistics();
 };
 
 bool PacMan::solve() {	
@@ -78,8 +97,9 @@ string PacMan::reconstructPath() {
 }
 
 string PacMan::pathToString(Square* t) {
+	cost++;
 	if(t->getParent() == NULL) return t->toString();
-	return (pathToString(t->getParent()) + t->toString());
+	return (pathToString(t->getParent()) + ", " + t->toString());
 }
 
 
@@ -104,6 +124,8 @@ bool PacMan::addSquare(int row, int col) {
 		pushed_sq->setCumulative(current->getCumulative()+1);
 		pushed_sq->setFScore();
 		openList.push_back(pushed_sq);		
+
+		frontierSize++;
 	}
 	// special check for g-score to determine if better path; uncommented by Jace
 	int tentative_cumulative_cost = current->getCumulative() + 1;
@@ -150,7 +172,7 @@ Square* PacMan::getLowestCostSquare() {
 	return current;
 }
 
-void PacMan::switchCurrentToClosed() {
+void PacMan::switchCurrentToClosed() {	
 	closedList.push_back(getLowestCostSquare());
 	current = closedList.back();	
 	m->setVisited(current->getRow(), current->getCol());	
@@ -171,3 +193,55 @@ bool PacMan::fin() {
 		return true;	
 	return false;
 }
+
+int PacMan::selectClosestGoal() {
+	int min = 0, pos = 0;
+	for(vector<Square*>::iterator it = this->goalArray.begin(); it != this->goalArray.end(); it++) {
+		int sourceX = current->getRow();
+		int sourceY = current->getCol();
+		int destX = (*it)->getRow();
+		int destY = (*it)->getCol();
+		int distance = (heuristicType == MD) ? computeManhattanDistance(sourceX, sourceY, destX, destY) :
+									  computeStraightLineDistance(sourceX, sourceY, destX, destY);
+
+		if(distance <= goalArray[min]->getHeuristic())
+			min = pos;
+		pos++;
+	}
+}
+
+void PacMan::printStatistics() {	
+	cout << "Path: " << reconstructPath() << endl;	
+	cout << "Path cost: " << cost << endl;
+	cout << "Expanded Nodes: " << closedList.size() << endl;
+	cout << "Frontier Size: " << frontierSize << endl;
+}
+
+
+// pseudocode for part 2
+
+/* 
+
+	initialize current square to open list
+	while openList is not empty
+		In array of goal squares
+			Look for the lowest cost goal square and set as a currentGoal
+		Add current square to closedList
+		See if current is goal
+			if goal, see if all goal squares have been visited
+				if yes, return true
+				else, refresh board
+		Add adjacent Squares
+			if not yet in openList
+				Set g, h, and f costs
+				set current as parent
+				push back to openList
+
+	new attribs: 
+		currentGoal
+		goalArray
+
+	new methods:
+		
+
+*/

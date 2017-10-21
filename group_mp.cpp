@@ -22,10 +22,8 @@ int main() {
 	PacMan p(readMazeText(fileName),option);
 	cout << p.mazeToString() << endl;
 	string sol = (p.solve()) ? "Yes" : "No";
-	cout << "Solved? " << sol << endl;
-	cout << "\n\n" << endl;
-	cout << p.reconstructPath() << endl;
-
+	cout << "Solved? " << sol << endl << endl;	
+	p.printStatistics();	
 	return 0;
 }
 

@@ -1,7 +1,7 @@
 using namespace std;
 
 int computeManhattanDistance(int, int, int, int);
-int computeStraightLineDistance(int, int, int, int, int);
+int computeStraightLineDistance(int, int, int, int);
 
 enum {
 	WALL = '%',
@@ -86,7 +86,7 @@ public:
 
 	string toString() {
 		char buffer[20];
-		sprintf(buffer, "Square (%d, %d)", this->getRow(), this->getCol());
+		sprintf(buffer, "Square (%d, %d)", this->getCol(), this->getRow());
 		string str = buffer;
 		return str;
 	}
@@ -112,7 +112,7 @@ void Square::setHeuristic(int type, int destX, int destY) {
 		heuristic = computeManhattanDistance(this->row, this->col, destX, destY);
 	}
 	else if(type == SLD) {
-		heuristic = computeStraightLineDistance(this->row, this->col, destX, destY, 1);
+		heuristic = computeStraightLineDistance(this->row, this->col, destX, destY);
 	}
 	else {
 		cout << "Heuristic type not valid. Resend arguments." << endl;
@@ -125,6 +125,6 @@ int computeManhattanDistance(int srcX, int srcY, int destX, int destY) {
 	return abs(destX-srcX) + abs(destY-srcY);
 }
 
-int computeStraightLineDistance(int srcX, int srcY, int destX, int destY, int cost) {
+int computeStraightLineDistance(int srcX, int srcY, int destX, int destY) {
 	return max(abs(destX-srcX),abs(destY-srcY));
 }
