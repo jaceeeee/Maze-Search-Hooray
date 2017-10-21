@@ -7,7 +7,7 @@ private:
 	// vector<Square> parentList;
 	vector<Square*> closedList;
 	vector<Square*> openList;
-	Square* current;	
+	Square* current;
 public:
 	// Pacman(Maze m) {
 	//		set start square to openList
@@ -24,9 +24,9 @@ public:
 		current->setFScore();
 	}
 
-	~PacMan(){		
+	~PacMan(){
 		current = NULL;
-		delete current;		
+		delete current;
 	}
 
 	bool addSquare(int,int);	// change to checkNeighbor
@@ -40,12 +40,12 @@ public:
 	string reconstructPath();
 	string pathToString(Square*);
 	string mazeToString() { return m.toString(); }
-
+	int getSmallestHeuristic(int,int);
 };
 
 bool PacMan::solve() {
 	//current
-	
+
 	bool found = false;
 	while(!this->openList.empty()) {
 		switchCurrentToClosed();
@@ -112,7 +112,9 @@ bool PacMan::addSquare(int x, int y) {
 		return false;
 	}
 	else if(!inOpenList(m.getSquare(x,y))) {
-		m.setHeuristic(this->heuristicType,this->m.getEndSquare(),x,y);
+		//compute for the nearest goal and then get their heuristic
+//		m.setHeuristic(this->heuristicType,this->m.getEndSquare(),x,y);
+		m.setHeuristic(this->heuristicType,this->m.getEndSquareArr(getSmallestHeuristic(x,y)),x,y);
 		m.setCumulativeCost(x,y,current->getCumulative()+1);
 		m.setFScore(x,y);
 		openList.push_back(m.getSquare(x,y));
@@ -157,11 +159,11 @@ Square* PacMan::getLowestCostSquare() {
 			min = (*it)->getCumulative();
 			del = it;
 			this->current = *it;
-		}		
+		}
 		cout << (*it)->getItem() << endl;
 		// cout << (*it)->getItem() << endl;
 	}
-	
+
 	openList.erase(del);
 	// cout << " ni ari ka sa lowestCostSquare" << endl;
 	return current;
@@ -192,11 +194,31 @@ void PacMan::scoutDirections() {
 	// cout << "Scout directions executed" << endl;
 }
 
+int PacMan::getSmallestHeuristic(int x, int y) {
+	int pos = 0; //at for
+	int min = m.endArrGetHeuristic(this->heuristicType, 0, x, y);
+	int heuristicAns = -1;
+	for(int i = 1; i < m.getEndArrSize(); i++){
+		heuristicAns = m.endArrGetHeuristic(this->heuristicType, 0, x, y);
+		if(heuristicAns < min){
+			min = heuristicAns;
+			pos = i;
+		}
+	}
+	return pos;
+}
+
+
 // 2
 bool PacMan::fin() {
 	if(current->getRow() == m.getEndSquare().getRow() && current->getCol() == m.getEndSquare().getCol()){
+
+
+
+
 		return true;
 	}
+	//make it here
 	// cout << "Fin executed." << endl;
 	return false;
 }

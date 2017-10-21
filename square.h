@@ -81,7 +81,7 @@ public:
 	}
 	void setSquare(int,int);
 
-	void setHeuristic(int,int,int);
+	int setHeuristic(int,int,int);
 	void setCumulative(int newCost) { this->cumulativeCost = newCost; }
 	void setFScore() { fScore = cumulativeCost + heuristic; }
 
@@ -109,15 +109,18 @@ void Square::setSquare(int h_val, int g_val) {
 	cumulativeCost = g_val;
 }
 
-void Square::setHeuristic(int type, int destX, int destY) {
+int Square::setHeuristic(int type, int destX, int destY) {
 	if(type == MD) {
 		heuristic = computeManhattanDistance(this->row, this->col, destX, destY);
+		return heuristic;
 	}
 	else if(type == SLD) {
 		heuristic = computeStraightLineDistance(this->row, this->col, destX, destY, 1);
+		return heuristic;
 	}
 	else {
 		cout << "Heuristic type not valid. Resend arguments." << endl;
+		return -1; //if valid
 		}
 }
 
