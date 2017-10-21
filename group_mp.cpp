@@ -12,7 +12,7 @@ using namespace std;
 // TODO; FINISH
 
 // Create Constructor for Pacman
-Maze readMazeText(char[]);
+Maze* readMazeText(char[]);
 
 int main() {
 	// cout<<aStar()<<endl;
@@ -24,51 +24,18 @@ int main() {
 	string sol = (p.solve()) ? "Yes" : "No";
 	cout << "Solved? " << sol << endl;
 	cout << "\n\n" << endl;
-	cout << p.mazeToString() << endl;
+	cout << p.reconstructPath() << endl;
 
 	return 0;
 }
 
-// String aStar() {
-	// while(openSet.isNotEmpty) {
-		// moveToNextSquare(); //
-		// if(fin()) {
-			// return reconstructPath()
-		// }
-		//
-		// evaluateCurrentSquare();
-	//}
-	// return "Failure, no possible path";
-
-// }
-
-// String reconstructPath() {
-	// Square pathSquare = current;
-	// while(m.getSquare(pathSquare.getRow(), pathSquare.getCol).getContent != START) {
-		// Square parent = pathSquare.getParent();
-		// parent.setContent('.');
-	// }
-	// return m;
-// }
-
-/*
-	pacman starts at Pos current
-	pacman checks surroundings
-		if passable, it adds to the closed list
-		<Square>.setParent(current);
-		<Square>.setCumulativeCosts;
-		closedList.add(<Square>)
-		checkIfBetterPathFunction();
-
-*/
-
-Maze readMazeText(char fileName[]) { // Jace changes
+Maze* readMazeText(char fileName[]) { // Jace changes
 	ifstream file(fileName);
 
 	if(!file.is_open()) {
 		cout << "File not found." << endl;
 		Maze *m = new Maze();
-		return *m;
+		return m;
 	}
 
 	string fileContents="", buffer;
@@ -83,9 +50,8 @@ Maze readMazeText(char fileName[]) { // Jace changes
 		lineCount++;
 	}
 
-	//cout<<fileContents<< endl;
 	Maze* ret = new Maze(lineCount,lineWidth,fileContents);
 
 
-	return *ret;
+	return ret;
 }

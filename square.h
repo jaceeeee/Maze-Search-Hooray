@@ -50,40 +50,39 @@ public:
 		visited = false;
 		this->content = item;
 		cumulativeCost = heuristic = fScore = 0;
-		// this->cumulativeCost = numeric_limits<int>::infinity();
+		this->cumulativeCost = numeric_limits<int>::infinity();
 	}
 
 	~Square() {
 		parent = NULL;
-		delete this->parent;
+		delete parent;
 	}
 
 	bool isPassable() { return (content == WALL) ? false : true; }
 
 	void setParent(Square *sq) { parent = sq; }
 	Square* getParent() { return parent; }
-	bool isVisited() { return visited; } // change to: ?
+	bool isVisited() { return visited; } 
+	
+	// untackled suggestion:
+	// change to: ?
 	// bool isVisisted(Vector<Square> closedList) {
-		// return find(closedList.begin(), closedList.end(), this)
+	// return find(closedList.begin(), closedList.end(), this)
 	// }
+	// reason: redundancy
 
 	char getItem() { return content; }
 	int getRow() { return row; }
 	int getCol() { return col; }
-
 	int getHeuristic() { return heuristic; }
 	int getCumulative() { return cumulativeCost; }
 	int getFScore() { return fScore; }
 
-	void setVisited(){
-		cout << " ni ari pa ka ? or wala na" << endl;
-		visited = (!visited) ? true : false;
-	}
+	void setVisited() { visited = (!visited) ? true : false; }
 	void setSquare(int,int);
-
-	void setHeuristic(int,int,int);
 	void setCumulative(int newCost) { this->cumulativeCost = newCost; }
 	void setFScore() { fScore = cumulativeCost + heuristic; }
+	void setHeuristic(int,int,int);
 
 	string toString() {
 		char buffer[20];
@@ -100,8 +99,7 @@ public:
 		this->cumulativeCost = sq.cumulativeCost;
 		this->heuristic = sq.heuristic;
 		return *this;
-	}
-	// void operator++(int);
+	}	
 };
 
 void Square::setSquare(int h_val, int g_val) {
@@ -118,7 +116,7 @@ void Square::setHeuristic(int type, int destX, int destY) {
 	}
 	else {
 		cout << "Heuristic type not valid. Resend arguments." << endl;
-		}
+	}
 }
 
 // produce heuristics
