@@ -19,6 +19,8 @@ private:
 	int frontierSize;
 
 	bool mazeFound;
+
+	int goalCount; 
 public:
 	
 	// set start square to openList
@@ -32,17 +34,22 @@ public:
 			current->setFScore();
 			
 			openList.push_back(current);
+
 			for(int i = 0; i < maze->getLength(); i++) {
 				for(int j = 0; j < maze->getWidth(); j++) {
-					if(maze->getSquare(i,j)->getItem() == END) {
-						goalArray.push_back(m->getSquare(i,j));					
+					if(maze->getSquare(i,j)->getItem() == END) {	
+						Square *pushed_goal = new Square(i,j,END);
+						// cout << "inside goalArrayloop" << endl;
+						// cout << "Printing i and j... " << i << " " << j << endl;
+						goalArray.push_back(pushed_goal);					
 					}
 				}
 			}
 
+			cout << "printing maze contents: " << goalArray[0]->getItem() << endl;
 			heuristicType = type;
-			frontierSize = cost = 0;
-			mazeFound = true;
+			goalCount = frontierSize = cost = 0;
+			mazeFound = true;			
 		} else { mazeFound = false; }
 	}
 
@@ -60,15 +67,18 @@ public:
 	bool inStartState() { return mazeFound; }
 	void switchCurrentToClosed();			// Refactor Comments: change to moveToNextSquare; Jace suggests switchCurrentToClosed
 	bool inOpenList(Square*);
-	bool fin();
+	bool foundOneGoal();
 	bool solve();
 	void pathChange(Square*, int);
-	void setCurrentGoal();
+	void setCurrentGoal(); //new	
 	string reconstructPath();
 	string pathToString(Square*);
 	string mazeToString() { return m->toString(); }
-	int selectClosestGoal();
+	int selectClosestGoal();//new
 	void printStatistics();	
+	void refresh();
+	bool mazeCompleted() { cout << goalCount << " " << goalArray.size() << endl;
+		return ((goalCount == goalArray.size()) ? true : false); }
 };
 
 
@@ -132,6 +142,7 @@ bool PacMan::addSquare(int row, int col) {
 }
 
 // sets the new parent and cost of a path square which had computed better costs
+// not used yet... check immediately previous if statement above
 void PacMan::pathChange(Square *target, int newCost) {
 	for(vector<Square*>::iterator it = openList.begin(); it != openList.end(); it++) {
 		if((*it)->getRow() == target->getRow() && (*it)->getCol() == target->getCol()) {
@@ -183,10 +194,12 @@ void PacMan::scoutDirections() {
 	addSquare(current->getRow(),current->getCol()+1);	
 }
 
-// checks if goal is met
-bool PacMan::fin() {
-	if(current->getRow() == m->getEndSquare().getRow() && current->getCol() == m->getEndSquare().getCol()) 
-		return true;	
+// checks if goal is met, and increments goalCounter as side effect
+bool PacMan::foundOneGoal() {	
+	if(current->getRow() == currentGoal->getRow() && current->getCol() == currentGoal->getCol()) {		
+		goalCount++;
+		return true;		
+	}
 	return false;
 }
 
@@ -194,19 +207,21 @@ bool PacMan::fin() {
 int PacMan::selectClosestGoal() {
 	int min = 0, pos = 0;
 	for(vector<Square*>::iterator it = this->goalArray.begin(); it != this->goalArray.end(); it++) {
-		int sourceX = current->getRow();
-		int sourceY = current->getCol();
-		int destX = (*it)->getRow();
-		int destY = (*it)->getCol();
-		int distance = (heuristicType == MD) ? computeManhattanDistance(sourceX, sourceY, destX, destY) :
-									  computeStraightLineDistance(sourceX, sourceY, destX, destY);
+		if(!(*it)->isVisited()){
+			int sourceX = current->getRow();
+			int sourceY = current->getCol();
+			int destX = (*it)->getRow();
+			int destY = (*it)->getCol();
+			int distance = (heuristicType == MD) ? computeManhattanDistance(sourceX, sourceY, destX, destY) :
+										  computeStraightLineDistance(sourceX, sourceY, destX, destY);
 
-		if(distance <= goalArray[min]->getHeuristic())
-			min = pos;
-		pos++;
+			if(distance <= goalArray[min]->getHeuristic())
+				min = pos;
+		}
+		pos++;			
 	}
 
-	return pos;
+	return min;
 }
 
 // prints statistics of maze search
@@ -217,24 +232,52 @@ void PacMan::printStatistics() {
 	cout << "Frontier Size: " << frontierSize << endl;
 }
 
-
-void PacMan::setCurrentGoal() {
-	currentGoal = goalArray[selectClosestGoal()];
+void PacMan::refresh() {
+	for(int i = 0; i < m->getLength(); i++) {
+		for(int j = 0; j < m->getWidth(); j++) {
+			if(m->getSquare(i,j)->getItem() != END)
+				m->setVisited(i,j,false);
+		}
+	}
 }
 
+// current goal is set from the closest unvisited goal square in goalArray
+void PacMan::setCurrentGoal() {	
+	Square *g = goalArray[selectClosestGoal()];
+	currentGoal = new Square(g->getRow(), g->getCol(), g->getItem());
+	cout << "curentGoal coordinates" << currentGoal->getRow() << " " << currentGoal->getCol() << " " << currentGoal->getItem() << endl;
+}
+
+
 bool PacMan::solve() {		
-	bool found = false;
+	bool solved = false;
+	
+	for(vector<Square*>::iterator it = goalArray.begin(); it!=goalArray.end(); it++){
+		cout << "goal Array contents" << (*it)->getRow() << " " << (*it)->getCol() << " " << (*it)->getItem()<< endl;
+	}
 	while(!this->openList.empty()) {
+		setCurrentGoal();			// sets current goal square
+		cout << "current coordinates: ";
+		cout << current->getRow() << " " << current->getCol() << endl;
+		cout << "currentGoal coordinates: ";
+		cout << currentGoal->getRow() << " " << currentGoal->getCol() << endl;
+		// if(currentGoal != NULL) cout << currentGoal->getRow() << currentGoal->getCol() << endl;
 		switchCurrentToClosed();		
-		if(!fin()) {
+		if(!foundOneGoal()) {
 			scoutDirections();
 		}
 		else {
-			found = true;
-			break;
+			cout << "FOUND A GOAL" << endl;
+			if(mazeCompleted()){
+				solved = true;
+				break;
+			} else {
+				refresh();
+			}
+
 		}
 	}
-	return found;
+	return solved;
 }
 
 Maze* readMazeText(char fileName[]) { // Jace changes
@@ -296,9 +339,13 @@ Maze* readMazeText(char fileName[]) { // Jace changes
 	new attribs: 
 		currentGoal
 		goalArray
+		goalCount
 
 	new methods:
-		bool goalChecker() 
+		bool mazeCompleted() 
+		void refresh()
+		int selectClosestGoal()		
+		void setCurrentGoal()
 
 		
 

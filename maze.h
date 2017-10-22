@@ -73,7 +73,8 @@ public:
 	Square* getSquare(int x ,int y) { return &maze[x][y]; }
 	Square* getStartingSquare() { return this->start; }
 	Square getEndSquare() { return *this->end; }
-	void setVisited(int x, int y) {	maze[x][y].setVisited(); }	
+	void setVisited(int x, int y) {	maze[x][y].setVisited(); }
+	void setVisited(int x, int y, bool arg)	 { maze[x][y].setVisited(arg); }
 	void setParent(int x, int y, Square* parent) { maze[x][y].setParent(parent); }
 	void setCumulativeCost(int x, int y, int cost) { maze[x][y].setCumulative(cost); }
 	void setHeuristic(int type, Square goal, int x, int y) { maze[x][y].setHeuristic(type,goal.getRow(),goal.getCol()); }

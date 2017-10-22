@@ -79,6 +79,7 @@ public:
 	int getFScore() { return fScore; }
 
 	void setVisited() { visited = (!visited) ? true : false; }
+	void setVisited(bool arg) { visited = arg; }
 	void setSquare(int,int);
 	void setCumulative(int newCost) { this->cumulativeCost = newCost; }
 	void setFScore() { fScore = cumulativeCost + heuristic; }
