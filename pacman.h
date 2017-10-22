@@ -207,7 +207,7 @@ int PacMan::selectClosestGoal() {
 }
 
 void PacMan::switchCurrentToClosed() {	
-	cout << "current" << current->getRow() << current->getCol() << endl;
+	cout << "current" << current->getRow() << current->getCol() <<" " << current->getFScore() << endl;
 	closedList.push_back(getLowestCostSquare());
 	current = closedList.back();
 	m->setVisited(current->getRow(), current->getCol());	
