@@ -77,6 +77,7 @@ public:
 	void setCumulative(int newCost) { this->cumulativeCost = newCost; }
 	void setFScore() { fScore = cumulativeCost + heuristic; }
 	void setHeuristic(int,int,int);
+	void setItem(char item) { this->content = item; }
 
 	string toString() {
 		char buffer[20];

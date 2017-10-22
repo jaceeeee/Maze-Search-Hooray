@@ -71,6 +71,7 @@ public:
 	void pathChange(Square*, int);
 	void setCurrentGoal(); //new	
 	string reconstructPath();
+	void tracePath(Square* path);
 	string pathToString(Square*);
 	string mazeToString() { return m->toString(); }
 	int selectClosestGoal();//new
@@ -79,31 +80,6 @@ public:
 	bool mazeCompleted() { cout << goalCount << " " << goalArray.size() << endl;
 		return ((goalCount == goalArray.size()) ? true : false); }
 };
-
-
-string PacMan::reconstructPath() {
-	string path = "";
-	Square* target;
-	vector<Square*>::iterator it;
-
-	for(it = closedList.begin(); it != closedList.end(); it++) {
-		if((*it)->getRow() == this->m->getEndSquare().getRow() && (*it)->getCol() == this->m->getEndSquare().getCol())
-			target = *it;
-	}
-
-	if(target == NULL)
-		return "Path not found.";
-	else {
-		path = pathToString(target);
-		return path;
-	}
-}
-
-string PacMan::pathToString(Square* t) {
-	cost++;
-	if(t->getParent() == NULL) return t->toString();
-	return (pathToString(t->getParent()) + ", " + t->toString());
-}
 
 // sets the new parent and cost of a path square which had computed better costs
 // not used yet... check immediately previous if statement above
@@ -118,11 +94,44 @@ void PacMan::pathChange(Square *target, int newCost) {
 
 // prints statistics of maze search
 void PacMan::printStatistics() {	
-	cout << "Path: " << reconstructPath() << endl;	
+	cout << "Path: " << endl << reconstructPath() << endl;	
 	cout << "Path cost: " << cost << endl;
 	cout << "Expanded Nodes: " << closedList.size() << endl;
 	cout << "Frontier Size: " << frontierSize << endl;
 }
+
+string PacMan::reconstructPath() {
+	string path = "";
+	Square* target;
+	vector<Square*>::iterator it;
+
+	for(it = closedList.begin(); it != closedList.end(); it++) {
+		if((*it)->getRow() == this->m->getEndSquare().getRow() && (*it)->getCol() == this->m->getEndSquare().getCol())
+			target = *it;
+	}
+
+	if(target == NULL)
+		return "Path not found.";
+	else {
+		tracePath(target);
+		return m->toString();
+		// path = pathToString(target);
+		// return path;
+	}
+}
+
+// string PacMan::pathToString(Square* t) {
+// 	cost++;
+// 	if(t->getParent() == NULL) return t->toString();
+// 	return (pathToString(t->getParent()) + ", " + t->toString());
+// }
+
+void PacMan::tracePath(Square* path) {
+	cost++;
+	if(path->getParent() == NULL) return;
+	m->getSquare(path->getRow(), path->getCol())->setItem('.');
+	return tracePath(path->getParent());
+} 
 
 void PacMan::refresh() {
 	for(int i = 0; i < m->getLength(); i++) {
