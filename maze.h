@@ -78,7 +78,7 @@ public:
 	void setCumulativeCost(int x, int y, int cost) { maze[x][y].setCumulative(cost); }
 	void setHeuristic(int type, Square goal, int x, int y) { maze[x][y].setHeuristic(type,goal.getRow(),goal.getCol()); }
 	//getting heuristic for each square in the array
-	int endArrGetHeuristic(int type, int i, int x, int y) { return maze[x][y].setHeuristic(type,endarray.at(i)->getRow(), endarray.at(i)->getCol()); }
+	int setHeuristic(int type, int i, int x, int y) { return maze[x][y].setHeuristic(type,endarray.at(i)->getRow(), endarray.at(i)->getCol()); }
 	int getEndArrSize() { return endarray.size(); }
 	Square getEndSquareArr(int i) { return *(endarray.at(i)); }
 

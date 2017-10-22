@@ -82,7 +82,7 @@ public:
 	void setSquare(int,int);
 	void setCumulative(int newCost) { this->cumulativeCost = newCost; }
 	void setFScore() { fScore = cumulativeCost + heuristic; }
-	void setHeuristic(int,int,int);
+	int setHeuristic(int,int,int);
 
 	string toString() {
 		char buffer[20];

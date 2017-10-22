@@ -40,7 +40,7 @@ public:
 	string reconstructPath();
 	string pathToString(Square*);
 	string mazeToString() { return m->toString(); }
-
+	int getSmallestHeuristic(int,int);
 };
 
 bool PacMan::solve() {
@@ -145,9 +145,7 @@ Square* PacMan::getLowestCostSquare() {
 		}
 		cout << (*it)->getItem() << endl;
 		// cout << (*it)->getItem() << endl;
-		}
 	}
-
 	openList.erase(del);
 
 	return current;
@@ -170,10 +168,10 @@ void PacMan::scoutDirections() {
 
 int PacMan::getSmallestHeuristic(int x, int y) {
 	int pos = 0; //at for
-	int min = m.endArrGetHeuristic(this->heuristicType, 0, x, y);
+	int min = m->endArrGetHeuristic(this->heuristicType, 0, x, y);
 	int heuristicAns = -1;
-	for(int i = 1; i < m.getEndArrSize(); i++){
-		heuristicAns = m.endArrGetHeuristic(this->heuristicType, 0, x, y);
+	for(int i = 1; i < m->getEndArrSize(); i++){
+		heuristicAns = m->endArrGetHeuristic(this->heuristicType, 0, x, y);
 		if(heuristicAns < min){
 			min = heuristicAns;
 			pos = i;
@@ -181,7 +179,6 @@ int PacMan::getSmallestHeuristic(int x, int y) {
 	}
 	return pos;
 }
-
 
 // 2
 bool PacMan::fin() {
@@ -198,3 +195,20 @@ bool PacMan::fin() {
 // m.setCumulativeCost(x,y,current->getCumulative()+1);
 // m.setFScore(x,y);
 // openList.push_back(m.getSquare(x,y));
+
+
+
+
+
+/**
+***
+	* so make an array of end squares
+	* every time you see an end square add it to the array of end squares
+	* every time we scout for directions we check the smallest heuristic
+		out of the end square array
+	* once we reach the smallest heuristic end square location  
+
+
+
+
+***/
