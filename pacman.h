@@ -176,6 +176,13 @@ void PacMan::initializeSquareValues() {
 			m->getSquare(i,j)->setFScore();
 		}
 	}
+
+	for(int i = 0; i < m->getLength(); i++) {
+		for(int j = 0; j < m->getWidth(); j++) {
+			cout<<m->getSquare(i,j)->getHeuristic()<<"   ";
+		}
+		cout<<endl;
+	}
 }
 
 // current goal is set from the closest unvisited goal square in goalArray
@@ -260,12 +267,12 @@ bool PacMan::addSquare(int row, int col) {
 		return false;
 	}
 	else if(!inOpenList(m->getSquare(row,col))) {
-		Square* pushed_sq = new Square(sq->getRow(), sq->getCol(), sq->getItem());
+		//Square* pushed_sq = new Square(sq->getRow(), sq->getCol(), sq->getItem());
 		//pushed_sq->setParent(current); // no need if fScore comparison is implemented in open list
 		//pushed_sq->setHeuristic(this->heuristicType,row,col); // if fScore is used for open list comparison heuristics need to be pre-set
 		//pushed_sq->setCumulative(current->getCumulative()+1); // no need if fScore comparison is implemented in open list
 		//pushed_sq->setFScore(); // no need if fScore comparison is implemented in open list
-		openList.push_back(pushed_sq);		
+		openList.push_back(m->getSquare(row,col));		
 
 		frontierSize++;
 	}
