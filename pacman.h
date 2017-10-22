@@ -1,4 +1,7 @@
-	#include "maze.h"
+#include "maze.h"
+#include <cstring>
+
+Maze* readMazeText(char[]);
 
 class PacMan {
 private:
@@ -14,29 +17,33 @@ private:
 	int heuristicType;	
 	int cost;
 	int frontierSize;
+
+	bool mazeFound;
 public:
 	
 	// set start square to openList
 	// initialize goal square? NO NEED.
 	PacMan(Maze *maze, int type) { //Jace changes
 		m = maze;
-
-		current = m->getStartingSquare();		
-		current->setCumulative(0);
-		current->setHeuristic(type,m->getEndSquare().getCol(),m->getEndSquare().getRow());
-		current->setFScore();
-		
-		openList.push_back(current);
-		for(int i = 0; i < maze->getLength(); i++) {
-			for(int j = 0; j < maze->getWidth(); j++) {
-				if(maze->getSquare(i,j)->getItem() == END) {
-					goalArray.push_back(m->getSquare(i,j));					
+		if(m != NULL){
+			current = m->getStartingSquare();		
+			current->setCumulative(0);
+			current->setHeuristic(type,m->getEndSquare().getCol(),m->getEndSquare().getRow());
+			current->setFScore();
+			
+			openList.push_back(current);
+			for(int i = 0; i < maze->getLength(); i++) {
+				for(int j = 0; j < maze->getWidth(); j++) {
+					if(maze->getSquare(i,j)->getItem() == END) {
+						goalArray.push_back(m->getSquare(i,j));					
+					}
 				}
 			}
-		}
 
-		heuristicType = type;
-		frontierSize = cost = 0;
+			heuristicType = type;
+			frontierSize = cost = 0;
+			mazeFound = true;
+		} else { mazeFound = false; }
 	}
 
 	~PacMan(){
@@ -50,6 +57,7 @@ public:
 	bool addSquare(int,int);				// Refactor Comments: change to checkNeighbor
 	void scoutDirections();					// Refactor Comments: change to evaluateCurrentSquare
 	Square* getLowestCostSquare();
+	bool inStartState() { return mazeFound; }
 	void switchCurrentToClosed();			// Refactor Comments: change to moveToNextSquare; Jace suggests switchCurrentToClosed
 	bool inOpenList(Square*);
 	bool fin();
@@ -59,7 +67,7 @@ public:
 	string pathToString(Square*);
 	string mazeToString() { return m->toString(); }
 	int selectClosestGoal();
-	void printStatistics();
+	void printStatistics();	
 };
 
 bool PacMan::solve() {	
@@ -217,7 +225,37 @@ void PacMan::printStatistics() {
 	cout << "Frontier Size: " << frontierSize << endl;
 }
 
+Maze* readMazeText(char fileName[]) { // Jace changes
+	string path = "mazes/";
+	char *pathToFile = new char[path.length()+strlen(fileName)+1];
 
+	strcpy(pathToFile,path.c_str());
+	strcat(pathToFile,fileName);
+
+	ifstream file(pathToFile);
+
+	if(!file.is_open()) {
+		cout << "File not found." << endl;
+		return NULL;
+	}
+
+	string fileContents="", buffer;
+	int lineCount = 0, lineWidth = 0;
+
+	while(getline(file,buffer)){
+		if(lineWidth == 0) {
+			lineWidth = buffer.length();
+		}
+
+		fileContents += buffer.substr(0,lineWidth);
+		lineCount++;
+	}
+
+	Maze* ret = new Maze(lineCount,lineWidth,fileContents);
+
+
+	return ret;
+}
 // pseudocode for part 2
 
 /* 
@@ -245,3 +283,4 @@ void PacMan::printStatistics() {
 		
 
 */
+
