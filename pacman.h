@@ -116,27 +116,6 @@ void PacMan::pathChange(Square *target, int newCost) {
 	}
 }
 
-// returns an index of the currently closer goal
-int PacMan::selectClosestGoal() {
-	int min = 0, pos = 0;
-	for(vector<Square*>::iterator it = this->goalArray.begin(); it != this->goalArray.end(); it++) {
-		if(!(*it)->isVisited()){
-			int sourceX = current->getRow();
-			int sourceY = current->getCol();
-			int destX = (*it)->getRow();
-			int destY = (*it)->getCol();
-			int distance = (heuristicType == MD) ? computeManhattanDistance(sourceX, sourceY, destX, destY) :
-										  computeStraightLineDistance(sourceX, sourceY, destX, destY);
-
-			if(distance <= goalArray[min]->getHeuristic())
-				min = pos;
-		}
-		pos++;			
-	}
-
-	return min;
-}
-
 // prints statistics of maze search
 void PacMan::printStatistics() {	
 	cout << "Path: " << reconstructPath() << endl;	
@@ -154,13 +133,6 @@ void PacMan::refresh() {
 	}
 }
 
-// current goal is set from the closest unvisited goal square in goalArray
-void PacMan::setCurrentGoal() {	
-	Square *g = goalArray[selectClosestGoal()];
-	currentGoal = new Square(g->getRow(), g->getCol(), g->getItem());
-	cout << "curentGoal coordinates" << currentGoal->getRow() << " " << currentGoal->getCol() << " " << currentGoal->getItem() << endl;
-}
-
 bool PacMan::solve() {		
 	bool solved = false;
 	
@@ -168,10 +140,10 @@ bool PacMan::solve() {
 		cout << "goal Array contents" << (*it)->getRow() << " " << (*it)->getCol() << " " << (*it)->getItem()<< endl;
 	}
 
+	setCurrentGoal();			// sets current goal square; only if everytime a goal is found?
 	initializeSquareValues();
 
 	while(!this->openList.empty()) {
-		setCurrentGoal();			// sets current goal square; only if everytime a goal is found?
 		cout << "current coordinates: ";
 		cout << current->getRow() << " " << current->getCol() << endl;
 		cout << "currentGoal coordinates: ";
@@ -195,13 +167,41 @@ bool PacMan::solve() {
 	return solved;
 }
 
-void Pacman::initializeSquareValues() {
+void PacMan::initializeSquareValues() {
 	for(int i = 0; i < m->getLength(); i++) {
 		for(int j = 0; j < m->getWidth(); j++) {
 			m->getSquare(i,j)->setHeuristic(heuristicType, currentGoal->getRow(), currentGoal->getCol());
 			m->getSquare(i,j)->setFScore();
 		}
 	}
+}
+
+// current goal is set from the closest unvisited goal square in goalArray
+void PacMan::setCurrentGoal() {	
+	Square *g = goalArray[selectClosestGoal()];
+	currentGoal = new Square(g->getRow(), g->getCol(), g->getItem());
+	cout << "curentGoal coordinates" << currentGoal->getRow() << " " << currentGoal->getCol() << " " << currentGoal->getItem() << endl;
+}
+
+// returns an index of the currently closer goal
+int PacMan::selectClosestGoal() {
+	int min = 0, pos = 0;
+	for(vector<Square*>::iterator it = this->goalArray.begin(); it != this->goalArray.end(); it++) {
+		if(!(*it)->isVisited()){
+			int sourceX = current->getRow();
+			int sourceY = current->getCol();
+			int destX = (*it)->getRow();
+			int destY = (*it)->getCol();
+			int distance = (heuristicType == MD) ? computeManhattanDistance(sourceX, sourceY, destX, destY) :
+										  computeStraightLineDistance(sourceX, sourceY, destX, destY);
+
+			if(distance <= goalArray[min]->getHeuristic())
+				min = pos;
+		}
+		pos++;			
+	}
+
+	return min;
 }
 
 void PacMan::switchCurrentToClosed() {	
@@ -271,7 +271,7 @@ bool PacMan::addSquare(int row, int col) {
 	//		This path is the best until now. Record it
 		m->setParent(row,col,current);
 		m->setCumulativeCost(row,col,current->getCumulative()+1);
-		//m->setFScore(); --> Update fScore; Needed for the fScore comparison in open list
+		m->setFScore(row, col); 
 	}
 	return true;
 }
