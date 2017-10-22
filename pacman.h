@@ -23,8 +23,6 @@ private:
 	int goalCount; 
 public:
 	
-	// set start square to openList
-	// initialize goal square? NO NEED.
 	PacMan(Maze *maze, int type) { //Jace changes
 		m = maze;
 		if(m != NULL){
@@ -61,14 +59,15 @@ public:
 		delete currentGoal;
 	}
 
-	bool addSquare(int,int);				// Refactor Comments: change to checkNeighbor
-	void scoutDirections();					// Refactor Comments: change to evaluateCurrentSquare
+	bool addSquare(int,int);				
+	void scoutDirections();					
 	Square* getLowestCostSquare();
 	bool inStartState() { return mazeFound; }
-	void switchCurrentToClosed();			// Refactor Comments: change to moveToNextSquare; Jace suggests switchCurrentToClosed
+	void switchCurrentToClosed();			
 	bool inOpenList(Square*);
 	bool foundOneGoal();
 	bool solve();
+	void initializeSquareValues();
 	void pathChange(Square*, int);
 	void setCurrentGoal(); //new	
 	string reconstructPath();
@@ -106,41 +105,6 @@ string PacMan::pathToString(Square* t) {
 	return (pathToString(t->getParent()) + ", " + t->toString());
 }
 
-
-// 3.1
-// change to checkNeighbor
-// add condition if square in closed set and if not in open set
-bool PacMan::addSquare(int row, int col) {
-	Square* sq = m->getSquare(row,col);
-	if(row > m->getLength() || col > m->getWidth() || row < 0 || col < 0) {
-		return false;
-	}
-	else if (m->getSquare(row, col)->getItem() == WALL) {
-		return false;
-	}	
-	else if(m->getSquare(row,col)->isVisited()) {
-		return false;
-	}
-	else if(!inOpenList(m->getSquare(row,col))) {
-		Square* pushed_sq = new Square(sq->getRow(), sq->getCol(), sq->getItem());
-		pushed_sq->setParent(current);
-		pushed_sq->setHeuristic(this->heuristicType,row,col);
-		pushed_sq->setCumulative(current->getCumulative()+1);
-		pushed_sq->setFScore();
-		openList.push_back(pushed_sq);		
-
-		frontierSize++;
-	}
-	// special check for g-score to determine if better path; uncommented by Jace
-	int tentative_cumulative_cost = current->getCumulative() + 1;
-	if (tentative_cumulative_cost < m->getSquare(row, col)->getCumulative())  {
-	//		This path is the best until now. Record it
-		m->setParent(row,col,current);
-		m->setCumulativeCost(row,col,current->getCumulative()+1);
-	}
-	return true;
-}
-
 // sets the new parent and cost of a path square which had computed better costs
 // not used yet... check immediately previous if statement above
 void PacMan::pathChange(Square *target, int newCost) {
@@ -150,57 +114,6 @@ void PacMan::pathChange(Square *target, int newCost) {
 			(*it)->setCumulative(newCost);
 		}
 	}
-}
-
-// checks to see if certain square is already in the open list
-bool PacMan::inOpenList(Square* s) {
-	for(int i = 0; i < openList.size(); i++)
-		if(openList[i]->getRow() == s->getRow() && openList[i]->getCol() == s->getCol())
-			return true;
-	return false;
-}
-
-// 1.1
-// put remove square in openlist
-Square* PacMan::getLowestCostSquare() {
-	int min = 100000000;	
-	vector<Square*>::iterator del;
-
-	for(vector<Square*>::iterator it = openList.begin(); it != openList.end(); it++) {		
-		if((*it)->getCumulative() <= min) {
-			min = (*it)->getCumulative();
-			del = it;
-			this->current = *it;
-		}				
-	}
-	
-	openList.erase(del);
-
-	return current;
-}
-
-void PacMan::switchCurrentToClosed() {	
-	closedList.push_back(getLowestCostSquare());
-	current = closedList.back();	
-	m->setVisited(current->getRow(), current->getCol());	
-}
-
-// 3
-// change to evaluateCurrentSquare
-void PacMan::scoutDirections() {
-	addSquare(current->getRow()-1,current->getCol());
-	addSquare(current->getRow(),current->getCol()-1);
-	addSquare(current->getRow()+1,current->getCol());
-	addSquare(current->getRow(),current->getCol()+1);	
-}
-
-// checks if goal is met, and increments goalCounter as side effect
-bool PacMan::foundOneGoal() {	
-	if(current->getRow() == currentGoal->getRow() && current->getCol() == currentGoal->getCol()) {		
-		goalCount++;
-		return true;		
-	}
-	return false;
 }
 
 // returns an index of the currently closer goal
@@ -248,15 +161,17 @@ void PacMan::setCurrentGoal() {
 	cout << "curentGoal coordinates" << currentGoal->getRow() << " " << currentGoal->getCol() << " " << currentGoal->getItem() << endl;
 }
 
-
 bool PacMan::solve() {		
 	bool solved = false;
 	
 	for(vector<Square*>::iterator it = goalArray.begin(); it!=goalArray.end(); it++){
 		cout << "goal Array contents" << (*it)->getRow() << " " << (*it)->getCol() << " " << (*it)->getItem()<< endl;
 	}
+
+	initializeSquareValues();
+
 	while(!this->openList.empty()) {
-		setCurrentGoal();			// sets current goal square
+		setCurrentGoal();			// sets current goal square; only if everytime a goal is found?
 		cout << "current coordinates: ";
 		cout << current->getRow() << " " << current->getCol() << endl;
 		cout << "currentGoal coordinates: ";
@@ -278,6 +193,95 @@ bool PacMan::solve() {
 		}
 	}
 	return solved;
+}
+
+void Pacman::initializeSquareValues() {
+	for(int i = 0; i < m->getLength(); i++) {
+		for(int j = 0; j < m->getWidth(); j++) {
+			m->getSquare(i,j)->setHeuristic(heuristicType, currentGoal->getRow(), currentGoal->getCol());
+			m->getSquare(i,j)->setFScore();
+		}
+	}
+}
+
+void PacMan::switchCurrentToClosed() {	
+	closedList.push_back(getLowestCostSquare());
+	current = closedList.back();	
+	m->setVisited(current->getRow(), current->getCol());	
+}
+
+Square* PacMan::getLowestCostSquare() {
+	int min = 1000000000;	
+	vector<Square*>::iterator del;
+
+	//lowest f-score
+	for(vector<Square*>::iterator it = openList.begin(); it != openList.end(); it++) {		
+		if((*it)->getFScore() <= min) {
+			min = (*it)->getFScore();
+			del = it;
+			this->current = *it;
+		}				
+	}
+	
+	openList.erase(del);
+
+	return current;
+}
+
+// checks if goal is met, and increments goalCounter as side effect
+bool PacMan::foundOneGoal() {	
+	if(current->getRow() == currentGoal->getRow() && current->getCol() == currentGoal->getCol()) {		
+		goalCount++;
+		return true;		
+	}
+	return false;
+}
+
+void PacMan::scoutDirections() {
+	addSquare(current->getRow()-1,current->getCol());
+	addSquare(current->getRow(),current->getCol()-1);
+	addSquare(current->getRow()+1,current->getCol());
+	addSquare(current->getRow(),current->getCol()+1);	
+}
+
+bool PacMan::addSquare(int row, int col) {
+	Square* sq = m->getSquare(row,col);
+	if(row > m->getLength() || col > m->getWidth() || row < 0 || col < 0) {
+		return false;
+	}
+	else if (m->getSquare(row, col)->getItem() == WALL) {
+		return false;
+	}	
+	else if(m->getSquare(row,col)->isVisited()) {
+		return false;
+	}
+	else if(!inOpenList(m->getSquare(row,col))) {
+		Square* pushed_sq = new Square(sq->getRow(), sq->getCol(), sq->getItem());
+		//pushed_sq->setParent(current); // no need if fScore comparison is implemented in open list
+		//pushed_sq->setHeuristic(this->heuristicType,row,col); // if fScore is used for open list comparison heuristics need to be pre-set
+		//pushed_sq->setCumulative(current->getCumulative()+1); // no need if fScore comparison is implemented in open list
+		//pushed_sq->setFScore(); // no need if fScore comparison is implemented in open list
+		openList.push_back(pushed_sq);		
+
+		frontierSize++;
+	}
+	// special check for g-score to determine if better path; uncommented by Jace
+	int tentative_cumulative_cost = current->getCumulative() + 1;
+	if (tentative_cumulative_cost < m->getSquare(row, col)->getCumulative())  {
+	//		This path is the best until now. Record it
+		m->setParent(row,col,current);
+		m->setCumulativeCost(row,col,current->getCumulative()+1);
+		//m->setFScore(); --> Update fScore; Needed for the fScore comparison in open list
+	}
+	return true;
+}
+
+// checks to see if certain square is already in the open list
+bool PacMan::inOpenList(Square* s) {
+	for(int i = 0; i < openList.size(); i++)
+		if(openList[i]->getRow() == s->getRow() && openList[i]->getCol() == s->getCol())
+			return true;
+	return false;
 }
 
 Maze* readMazeText(char fileName[]) { // Jace changes

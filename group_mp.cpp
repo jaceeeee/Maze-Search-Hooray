@@ -11,10 +11,7 @@ using namespace std;
 
 // TODO; FINISH
 
-// Create Constructor for Pacman
-
 int main() {
-	// cout<<aStar()<<endl;
 	char fileName[100];	
 	int option;
 	cout << "Enter file name: ";

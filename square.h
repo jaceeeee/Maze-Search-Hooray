@@ -49,8 +49,8 @@ public:
 		this->col = col;
 		visited = false;
 		this->content = item;
-		cumulativeCost = heuristic = fScore = 0;
-		this->cumulativeCost = numeric_limits<int>::infinity();
+		cumulativeCost = 100000000;
+		heuristic = fScore = 0;
 	}
 
 	~Square() {
@@ -63,13 +63,6 @@ public:
 	void setParent(Square *sq) { parent = sq; }
 	Square* getParent() { return parent; }
 	bool isVisited() { return visited; } 
-	
-	// untackled suggestion:
-	// change to: ?
-	// bool isVisisted(Vector<Square> closedList) {
-	// return find(closedList.begin(), closedList.end(), this)
-	// }
-	// reason: redundancy
 
 	char getItem() { return content; }
 	int getRow() { return row; }
