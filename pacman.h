@@ -63,6 +63,7 @@ public:
 	bool fin();
 	bool solve();
 	void pathChange(Square*, int);
+	void setCurrentGoal();
 	string reconstructPath();
 	string pathToString(Square*);
 	string mazeToString() { return m->toString(); }
@@ -70,21 +71,6 @@ public:
 	void printStatistics();	
 };
 
-bool PacMan::solve() {	
-	
-	bool found = false;
-	while(!this->openList.empty()) {
-		switchCurrentToClosed();		
-		if(!fin()) {
-			scoutDirections();
-		}
-		else {
-			found = true;
-			break;
-		}
-	}
-	return found;
-}
 
 string PacMan::reconstructPath() {
 	string path = "";
@@ -145,6 +131,7 @@ bool PacMan::addSquare(int row, int col) {
 	return true;
 }
 
+// sets the new parent and cost of a path square which had computed better costs
 void PacMan::pathChange(Square *target, int newCost) {
 	for(vector<Square*>::iterator it = openList.begin(); it != openList.end(); it++) {
 		if((*it)->getRow() == target->getRow() && (*it)->getCol() == target->getCol()) {
@@ -154,6 +141,7 @@ void PacMan::pathChange(Square *target, int newCost) {
 	}
 }
 
+// checks to see if certain square is already in the open list
 bool PacMan::inOpenList(Square* s) {
 	for(int i = 0; i < openList.size(); i++)
 		if(openList[i]->getRow() == s->getRow() && openList[i]->getCol() == s->getCol())
@@ -195,13 +183,14 @@ void PacMan::scoutDirections() {
 	addSquare(current->getRow(),current->getCol()+1);	
 }
 
-// 2
+// checks if goal is met
 bool PacMan::fin() {
 	if(current->getRow() == m->getEndSquare().getRow() && current->getCol() == m->getEndSquare().getCol()) 
 		return true;	
 	return false;
 }
 
+// returns an index of the currently closer goal
 int PacMan::selectClosestGoal() {
 	int min = 0, pos = 0;
 	for(vector<Square*>::iterator it = this->goalArray.begin(); it != this->goalArray.end(); it++) {
@@ -216,13 +205,36 @@ int PacMan::selectClosestGoal() {
 			min = pos;
 		pos++;
 	}
+
+	return pos;
 }
 
+// prints statistics of maze search
 void PacMan::printStatistics() {	
 	cout << "Path: " << reconstructPath() << endl;	
 	cout << "Path cost: " << cost << endl;
 	cout << "Expanded Nodes: " << closedList.size() << endl;
 	cout << "Frontier Size: " << frontierSize << endl;
+}
+
+
+void PacMan::setCurrentGoal() {
+	currentGoal = goalArray[selectClosestGoal()];
+}
+
+bool PacMan::solve() {		
+	bool found = false;
+	while(!this->openList.empty()) {
+		switchCurrentToClosed();		
+		if(!fin()) {
+			scoutDirections();
+		}
+		else {
+			found = true;
+			break;
+		}
+	}
+	return found;
 }
 
 Maze* readMazeText(char fileName[]) { // Jace changes
@@ -256,6 +268,7 @@ Maze* readMazeText(char fileName[]) { // Jace changes
 
 	return ret;
 }
+
 // pseudocode for part 2
 
 /* 
@@ -269,17 +282,24 @@ Maze* readMazeText(char fileName[]) { // Jace changes
 			if goal, see if all goal squares have been visited
 				if yes, return true
 				else, refresh board
-		Add adjacent Squares
+		Add adjacent "path" Squares
 			if not yet in openList
 				Set g, h, and f costs
 				set current as parent
 				push back to openList
+			else if already in openList
+				compute and set new costs
+				if better than prev
+					set parent to current
+
 
 	new attribs: 
 		currentGoal
 		goalArray
 
 	new methods:
+		bool goalChecker() 
+
 		
 
 */
