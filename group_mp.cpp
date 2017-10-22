@@ -12,10 +12,10 @@ using namespace std;
 // TODO; FINISH
 
 int main() {
-	char fileName[100];	
+	char fileName[100] = "tinyMaze.lay.txt";	
 	int option;
 	cout << "Enter file name: ";
-	cin >> fileName;	
+	// cin >> fileName;	
 	cout << endl << "Enter option type: ";
 	cin >> option;
 	cout << endl;

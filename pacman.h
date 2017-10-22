@@ -177,8 +177,10 @@ bool PacMan::solve() {
 		cout << "currentGoal coordinates: ";
 		cout << currentGoal->getRow() << " " << currentGoal->getCol() << endl;
 		// if(currentGoal != NULL) cout << currentGoal->getRow() << currentGoal->getCol() << endl;
-		switchCurrentToClosed();		
+		switchCurrentToClosed();
+		cout << "after switch current" << endl;
 		if(!foundOneGoal()) {
+			cout <<"Went here." << endl;
 			scoutDirections();
 		}
 		else {
@@ -195,7 +197,7 @@ bool PacMan::solve() {
 	return solved;
 }
 
-void Pacman::initializeSquareValues() {
+void PacMan::initializeSquareValues() {
 	for(int i = 0; i < m->getLength(); i++) {
 		for(int j = 0; j < m->getWidth(); j++) {
 			m->getSquare(i,j)->setHeuristic(heuristicType, currentGoal->getRow(), currentGoal->getCol());
@@ -205,8 +207,9 @@ void Pacman::initializeSquareValues() {
 }
 
 void PacMan::switchCurrentToClosed() {	
+	cout << "current" << current->getRow() << current->getCol() << endl;
 	closedList.push_back(getLowestCostSquare());
-	current = closedList.back();	
+	current = closedList.back();
 	m->setVisited(current->getRow(), current->getCol());	
 }
 
@@ -215,6 +218,7 @@ Square* PacMan::getLowestCostSquare() {
 	vector<Square*>::iterator del;
 
 	//lowest f-score
+	
 	for(vector<Square*>::iterator it = openList.begin(); it != openList.end(); it++) {		
 		if((*it)->getFScore() <= min) {
 			min = (*it)->getFScore();
