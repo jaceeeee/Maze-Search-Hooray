@@ -59,10 +59,16 @@ public:
 	}
 
 	bool isPassable() { return (content == WALL) ? false : true; }
-
 	void setParent(Square *sq) { parent = sq; }
 	Square* getParent() { return parent; }
-	bool isVisited() { return visited; } 
+	bool isVisited() { return visited; }
+
+	// untackled suggestion:
+	// change to: ?
+	// bool isVisisted(Vector<Square> closedList) {
+	// return find(closedList.begin(), closedList.end(), this)
+	// }
+	// reason: redundancy
 
 	char getItem() { return content; }
 	int getRow() { return row; }
@@ -76,7 +82,8 @@ public:
 	void setSquare(int,int);
 	void setCumulative(int newCost) { this->cumulativeCost = newCost; }
 	void setFScore() { fScore = cumulativeCost + heuristic; }
-	void setHeuristic(int,int,int);
+	int setHeuristic(int,int,int);
+	void setItem(char item) { this->content = item; }
 
 	string toString() {
 		char buffer[20];
@@ -93,7 +100,7 @@ public:
 		this->cumulativeCost = sq.cumulativeCost;
 		this->heuristic = sq.heuristic;
 		return *this;
-	}	
+	}
 };
 
 void Square::setSquare(int h_val, int g_val) {
@@ -101,16 +108,18 @@ void Square::setSquare(int h_val, int g_val) {
 	cumulativeCost = g_val;
 }
 
-void Square::setHeuristic(int type, int destX, int destY) {
+int Square::setHeuristic(int type, int destX, int destY) {
 	if(type == MD) {
 		heuristic = computeManhattanDistance(this->row, this->col, destX, destY);
+		return heuristic;
 	}
 	else if(type == SLD) {
 		heuristic = computeStraightLineDistance(this->row, this->col, destX, destY);
 	}
 	else {
 		cout << "Heuristic type not valid. Resend arguments." << endl;
-	}
+		return -1; //if valid
+		}
 }
 
 // produce heuristics
