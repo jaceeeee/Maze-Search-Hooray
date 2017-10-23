@@ -11,9 +11,8 @@ using namespace std;
 
 // TODO; FINISH
 
-// Create Constructor for Pacman
-
 int main() {
+<<<<<<< HEAD
 	// cout<<aStar()<<endl;
 	while(true){
 		cout << "Would you like to enter the maze ?" << endl;
@@ -46,3 +45,25 @@ int main() {
 	}
 	return 0;
 }
+=======
+	char fileName[100];	
+	int option;
+	cout << "Enter file name: ";
+	cin >> fileName;	
+	cout << endl << "Enter option type: ";
+	cin >> option;
+	cout << endl;
+	
+	PacMan p(readMazeText(fileName),option);
+	if(p.inStartState()){
+		cout << p.mazeToString() << endl;
+		string sol = (p.solve()) ? "Yes" : "No";
+		cout << "Solved? " << sol << endl << endl;	
+		p.printStatistics();	
+	} else {
+		cout << "recheck file name arguments" << endl;
+	}
+	return 0;
+}
+
+>>>>>>> 273d077c574fdd822ea583993be5e90a3fd0963f
