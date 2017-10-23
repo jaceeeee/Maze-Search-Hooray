@@ -59,10 +59,8 @@ public:
 	}
 
 	bool isPassable() { return (content == WALL) ? false : true; }
-	void setItem() { this->content = '*';}
 	void setParent(Square *sq) { parent = sq; }
 	Square* getParent() { return parent; }
-<<<<<<< HEAD
 	bool isVisited() { return visited; }
 
 	// untackled suggestion:
@@ -71,9 +69,6 @@ public:
 	// return find(closedList.begin(), closedList.end(), this)
 	// }
 	// reason: redundancy
-=======
-	bool isVisited() { return visited; } 
->>>>>>> 273d077c574fdd822ea583993be5e90a3fd0963f
 
 	char getItem() { return content; }
 	int getRow() { return row; }
@@ -87,12 +82,8 @@ public:
 	void setSquare(int,int);
 	void setCumulative(int newCost) { this->cumulativeCost = newCost; }
 	void setFScore() { fScore = cumulativeCost + heuristic; }
-<<<<<<< HEAD
 	int setHeuristic(int,int,int);
-=======
-	void setHeuristic(int,int,int);
 	void setItem(char item) { this->content = item; }
->>>>>>> 273d077c574fdd822ea583993be5e90a3fd0963f
 
 	string toString() {
 		char buffer[20];

@@ -104,9 +104,9 @@ public:
 	Maze& operator=(const Maze&);
 };
 
-void Maze::printPath(int x, int y) {
-	maze[x][y].setItem();
-}
+/*void Maze::printPath(int x, int y) {
+	maze[x][y].setItem()
+}*/
 
 Maze& Maze::operator=(const Maze& maze) {
 	this->length = maze.length, this->width = maze.width;

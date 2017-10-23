@@ -123,15 +123,15 @@ string PacMan::reconstructPath() {
 string PacMan::pathToString(Square* t) {
 	cost++;
 	if(t->getParent() == NULL) return t->toString();
-	m->printPath(t->getRow(),t->getCol());
+	//m->printPath(t->getRow(),t->getCol());
 	return (pathToString(t->getParent()) + ", " + t->toString());
 }
 
 void PacMan::tracePath(Square* path) {
 	cost++;
 	if(path->getParent() == NULL) return;
-	m->printPath(path->getRow(),path->getCol());
-	m->getSquare(path->getRow(), path->getCol())->setItem('.');
+	//m->printPath(path->getRow(),path->getCol());
+	m->getSquare(path->getRow(), path->getCol())->setItem('*');
 	return tracePath(path->getParent());
 }
 // 3.1
@@ -240,7 +240,6 @@ bool PacMan::solve() {
 		cout << "goal Array contents" << (*it)->getRow() << " " << (*it)->getCol() << " " << (*it)->getItem()<< endl;
 	}
 
-	setCurrentGoal();			// sets current goal square; only if everytime a goal is found?
 	initializeSquareValues();
 
 	while(!this->openList.empty()) {
@@ -264,7 +263,8 @@ bool PacMan::solve() {
 				refresh();
 			}
 		}
-		return solved;
+	}
+	return solved;
 }
 
 bool PacMan::addSquare(int row, int col) {
