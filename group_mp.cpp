@@ -12,46 +12,37 @@ using namespace std;
 // TODO; FINISH
 
 // Create Constructor for Pacman
-Maze* readMazeText(char[]);
 
 int main() {
 	// cout<<aStar()<<endl;
-	char fileName[100] = "tinyMaze.lay.txt";		
-	int option;
-	cin >> option;	
-	PacMan p(readMazeText(fileName),option);
-	cout << p.mazeToString() << endl;
-	string sol = (p.solve()) ? "Yes" : "No";
-	cout << "Solved? " << sol << endl;
-	cout << "\n\n" << endl;
-	cout << p.reconstructPath() << endl;
+	while(true){
+		cout << "Would you like to enter the maze ?" << endl;
+		cout << "Please choose a number between 1 and 0" << endl;
+		cout << "1 for entering the maze and 0 for quitting: ";
+		int choice;
+		cin >> choice;
 
-	return 0;
-}
+		//switch(choice){}
+		char fileName[100];
+		int option;
+		cout << "Enter file name: ";
+		cin >> fileName;
+		cout << endl << "Enter option type: ";
+		cin >> option;
+		cout << endl;
 
-Maze* readMazeText(char fileName[]) { // Jace changes
-	ifstream file(fileName);
+		PacMan p(readMazeText(fileName),option);
+		if(p.inStartState()){
+			cout << p.mazeToString() << endl;
+			string sol = (p.solve()) ? "Yes" : "No";
+			cout << "Solved? " << sol << endl << endl;
+			p.printStatistics();
+			cout << "\n\n" << p.mazeToString() << endl ;
 
-	if(!file.is_open()) {
-		cout << "File not found." << endl;
-		Maze *m = new Maze();
-		return m;
-	}
-
-	string fileContents="", buffer;
-	int lineCount = 0, lineWidth = 0;
-
-	while(getline(file,buffer)){
-		if(lineWidth == 0) {
-			lineWidth = buffer.length();
+		} else {
+			cout << "recheck file name arguments" << endl;
 		}
 
-		fileContents += buffer.substr(0,lineWidth);
-		lineCount++;
 	}
-
-	Maze* ret = new Maze(lineCount,lineWidth,fileContents);
-
-
-	return ret;
+	return 0;
 }

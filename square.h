@@ -1,7 +1,7 @@
 using namespace std;
 
 int computeManhattanDistance(int, int, int, int);
-int computeStraightLineDistance(int, int, int, int, int);
+int computeStraightLineDistance(int, int, int, int);
 
 enum {
 	WALL = '%',
@@ -59,7 +59,7 @@ public:
 	}
 
 	bool isPassable() { return (content == WALL) ? false : true; }
-
+	void setItem() { this->content = '*';}
 	void setParent(Square *sq) { parent = sq; }
 	Square* getParent() { return parent; }
 	bool isVisited() { return visited; }
@@ -79,6 +79,7 @@ public:
 	int getFScore() { return fScore; }
 
 	void setVisited() { visited = (!visited) ? true : false; }
+	void setVisited(bool arg) { visited = arg; }
 	void setSquare(int,int);
 	void setCumulative(int newCost) { this->cumulativeCost = newCost; }
 	void setFScore() { fScore = cumulativeCost + heuristic; }
@@ -86,7 +87,7 @@ public:
 
 	string toString() {
 		char buffer[20];
-		sprintf(buffer, "Square (%d, %d)", this->getRow(), this->getCol());
+		sprintf(buffer, "Square (%d, %d)", this->getCol(), this->getRow());
 		string str = buffer;
 		return str;
 	}
@@ -113,8 +114,7 @@ int Square::setHeuristic(int type, int destX, int destY) {
 		return heuristic;
 	}
 	else if(type == SLD) {
-		heuristic = computeStraightLineDistance(this->row, this->col, destX, destY, 1);
-		return heuristic;
+		heuristic = computeStraightLineDistance(this->row, this->col, destX, destY);
 	}
 	else {
 		cout << "Heuristic type not valid. Resend arguments." << endl;
@@ -128,6 +128,6 @@ int computeManhattanDistance(int srcX, int srcY, int destX, int destY) {
 	return abs(destX-srcX) + abs(destY-srcY);
 }
 
-int computeStraightLineDistance(int srcX, int srcY, int destX, int destY, int cost) {
+int computeStraightLineDistance(int srcX, int srcY, int destX, int destY) {
 	return max(abs(destX-srcX),abs(destY-srcY));
 }
